@@ -26,20 +26,13 @@ class AnnouncementsBetaTests(unittest.TestCase):
             (INTEGRATION / "__init__.py").read_text(encoding="utf-8"),
         )
 
-    def test_feed_is_best_effort_cached_and_uses_existing_random_id(self) -> None:
+    def test_no_automatic_installation_presence_or_news_requests(self) -> None:
         source = (INTEGRATION / "announcements.py").read_text(encoding="utf-8")
-        presence = (INTEGRATION / "presence.py").read_text(encoding="utf-8")
-        self.assertIn('"version": INTEGRATION_VERSION', source)
-        self.assertIn('"language": language', source)
-        self.assertIn('params["models"]', source)
-        self.assertIn('"installation_id": await async_get_presence_installation_id', source)
-        self.assertIn("except Exception as err", source)
-        self.assertIn("self.items", source)
-        self.assertIn("Store(", source)
-        self.assertNotIn("serial_number", source)
-        self.assertNotIn("bearer_token", source)
-        self.assertIn("async_get_presence_installation_id", presence)
-        self.assertIn('return await _installation_id(hass)', presence)
+        tracker = (INTEGRATION / "device_tracker.py").read_text(encoding="utf-8")
+        self.assertFalse((INTEGRATION / "presence.py").exists())
+        self.assertNotIn("async_start_presence_heartbeat", tracker)
+        self.assertNotIn("async_get_presence_installation_id", source)
+        self.assertNotIn("reports.mqbretrofithungary.online", source)
 
     def test_frontend_has_news_panel_badge_and_popup_opt_in(self) -> None:
         card = (INTEGRATION / "frontend" / "anthbot-map-card.js").read_text(encoding="utf-8")

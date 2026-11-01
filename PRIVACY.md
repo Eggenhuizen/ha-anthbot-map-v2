@@ -1,3 +1,15 @@
+# Eggenhuizen privacy fork
+
+This fork removes the mandatory installation-presence heartbeat entirely. The presence module, device-tracker startup hook, random installation-ID generation and six-hour reporting loop have been removed. The optional announcement/news feed remains offline and empty, so it cannot transmit the same identifier or act as an alternate background reporting route.
+
+The existing optional usage statistics, automatic diagnostic uploads and read-only Developer Agent remain disabled by default. Do not enable them if no developer reporting is desired. Optional community voice-store actions are separate from mower login and are not required for the dashboard.
+
+ANTHBOT account login still uses the vendor cloud over HTTPS. Home Assistant stores the configured username and password locally in its config entry for automatic reauthentication; this fork does not claim encrypted credential storage or local-only mower control. No production account has been used in the source tests.
+
+Upstream behavior is documented below for provenance; its news/presence description does not apply to this fork.
+
+---
+
 # ANTHBOT Map developer reporting privacy information
 
 Developer reporting is optional and disabled by default. The ANTHBOT Map integration works without enabling either reporting option.

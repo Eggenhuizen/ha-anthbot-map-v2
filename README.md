@@ -1,3 +1,5 @@
+> **Eggenhuizen privacy fork:** mandatory installation-presence reporting is removed and automatic project news stays offline. Optional reporting remains off by default. See [PRIVACY.md](PRIVACY.md). Mower login and control continue to use the ANTHBOT vendor cloud. Install from this fork, not the upstream repository, to retain these changes.
+
 # Anthbot Map for Home Assistant
 
 [English](README.md) | [Magyar](README_HU.md)

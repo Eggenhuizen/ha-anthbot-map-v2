@@ -1,10 +1,4 @@
-"""Best-effort Anthbot Map announcements for the bundled frontend.
-
-The feed is deliberately isolated from mower control.  It sends only the
-integration version, selected display language, mower model names and the
-random minimal-presence installation ID.  A failed request always falls back
-to the last locally cached response.
-"""
+"""Offline project-news service retained for frontend compatibility in this privacy fork."""
 
 from __future__ import annotations
 
@@ -24,7 +18,6 @@ from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.storage import Store
 
 from .const import DOMAIN, INTEGRATION_VERSION
-from .presence import async_get_presence_installation_id
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -205,42 +198,10 @@ class AnnouncementsRuntime:
         return self.fetched_at is None or _utcnow() - self.fetched_at >= _INTERVAL
 
     async def async_refresh(self, language: str) -> None:
+        """Keep the optional news feed offline in this privacy fork."""
         async with self.lock:
-            try:
-                params = {
-                    "version": INTEGRATION_VERSION,
-                    "language": language,
-                    "installation_id": await async_get_presence_installation_id(
-                        self.hass
-                    ),
-                }
-                models = _models(self.hass)
-                if models:
-                    params["models"] = ",".join(models)
-                session = async_get_clientsession(self.hass)
-                async with session.get(
-                    ANNOUNCEMENTS_ENDPOINT, params=params, timeout=8
-                ) as response:
-                    if response.status != 200:
-                        raise RuntimeError(f"HTTP {response.status}")
-                    payload = await response.json(content_type=None)
-                if not isinstance(payload, dict) or payload.get("schema") != _SCHEMA:
-                    raise ValueError("unsupported announcement schema")
-                raw_items = payload.get("items")
-                if not isinstance(raw_items, list):
-                    raise ValueError("announcement items are missing")
-                self.items = [
-                    cleaned
-                    for item in raw_items[:_MAX_ITEMS]
-                    if (cleaned := _clean_item(item)) is not None
-                ]
-                self.language = language
-                self.fetched_at = _utcnow()
-                self.last_error = None
-                await self.async_save()
-            except Exception as err:  # noqa: BLE001 - never affect mower control
-                self.last_error = str(err)[:200]
-                _LOGGER.debug("Announcement refresh failed: %s", err)
+            self.items = []
+            self.fetched_at = _utcnow()
 
     def response(self) -> dict[str, Any]:
         read_ids = {
